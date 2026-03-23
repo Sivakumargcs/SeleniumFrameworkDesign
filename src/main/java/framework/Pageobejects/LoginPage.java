@@ -27,11 +27,18 @@ public class LoginPage extends AbstractClass {
 	@FindBy(id="login")
 	WebElement submit;
 	
+	@FindBy(css=".toast-error")
+	WebElement errorMessage;
+	
 	public ProductSearch LoginApplication(String email, String pwd) {
 		useremail.sendKeys(email);
 		password.sendKeys(pwd);
 		submit.click();		
 		return new ProductSearch(driver);
+	}
+	
+	public String getErrorMessage() {
+		return errorMessage.getText();
 	}
 	
 	public void GoTo() {

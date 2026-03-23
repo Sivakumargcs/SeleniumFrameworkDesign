@@ -14,6 +14,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import framework.Pageobejects.CartPage;
+import framework.Pageobejects.OrderPage;
 
 public class AbstractClass {
 	
@@ -26,6 +27,9 @@ public class AbstractClass {
 	
 	@FindBy(css="[routerlink*='cart']")
 	WebElement cart;
+	
+	@FindBy(css="[routerlink*=\"myorders\"]")
+	WebElement orderPage;
 
 	public WebElement WaitForElementToAppear(By FindBy) {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -53,9 +57,16 @@ public void WaitForElementToDisappear(WebElement element) throws InterruptedExce
 		
 	public CartPage GoToCart() {
 		cart.click();
-		return new CartPage(driver);
+		CartPage cartpage = new CartPage(driver);
+		return cartpage ;
 		 
 	}
+	
+	public OrderPage GotoOrderPage() {
+		cart.click();
+		OrderPage orderPage = new OrderPage(driver);
+		return orderPage ;
+	}	
 	
 	public WebElement WaitForElementToClickable(By FindBy) {
 		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));

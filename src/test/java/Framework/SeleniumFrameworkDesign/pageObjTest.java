@@ -1,45 +1,41 @@
 package Framework.SeleniumFrameworkDesign;
 
-import java.time.Duration;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
+
+
+import Framework.BaseTest.BaseTest;
+import Framework.BaseTest.Retry;
 import framework.Pageobejects.CartPage;
 import framework.Pageobejects.ConfirmationPage;
 import framework.Pageobejects.LoginPage;
+import framework.Pageobejects.OrderPage;
 import framework.Pageobejects.PaymentPage;
 import framework.Pageobejects.ProductSearch;
-import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class pageObjTest { 
-	
-	public static void main(String[] args) throws InterruptedException {
-	
-	String productName = "ZARA COAT 3";
+public class pageObjTest extends BaseTest { 
 		
-	WebDriverManager.chromedriver().setup();
-	WebDriver driver= new ChromeDriver();
-	driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-	driver.manage().window().maximize();
+	@Test(dataProvider = "getData", groups= {"Purchase"})
+	public void SubmitOrder(HashMap<String, String> input) throws InterruptedException, IOException {
 	
-	LoginPage loginpage = new LoginPage(driver);
-	loginpage.GoTo();
-	ProductSearch productSearch=loginpage.LoginApplication("sivakumargcs@gmail.com", "Siva@123");
+	ProductSearch productSearch=loginpage.LoginApplication(input.get("email"), input.get("password"));
 		
 	productSearch.productlist();
-	productSearch.GetProductByText(productName);
-	productSearch.AddToCart(productName);
+	productSearch.GetProductByText(input.get("product"));
+	productSearch.AddToCart(input.get("product"));
 	CartPage cart= productSearch.GoToCart();
 	
-	Boolean cartprod = cart.Verifyproducts(productName);
+	Boolean cartprod = cart.Verifyproducts(input.get("product"));
 	Assert.assertTrue(cartprod);
 	PaymentPage pamymentpage =cart.CheckOutButton();
 	
@@ -48,9 +44,33 @@ public class pageObjTest {
 	
 	String confirmMessage = confirmpage.GetConfirmMessage();;	
 	Assert.assertTrue(confirmMessage.equalsIgnoreCase("Thankyou for the order."));
-	driver.close();
-	
-	
+	System.out.println(confirmMessage);
 	}
 
+	@Test(dependsOnMethods= {"SubmitOrder"}, retryAnalyzer = Retry.class)
+	public void VerifyOrderPage()
+		{
+		String productName = "ZARA COAT 3";
+		ProductSearch productSearch=loginpage.LoginApplication("sivakumargcs@gmail.com", "Siva@123");
+		OrderPage orderPage = productSearch.GotoOrderPage();
+		Assert.assertTrue(orderPage.VerifyOrders(productName));
+		}
+	
+	
+	@DataProvider
+	public Object[][] getData() throws IOException {
+		/*HashMap<String,String> Test1= new HashMap<String, String>();
+		Test1.put("email","sivakumargcs@gmail.com");
+		Test1.put("password", "Siva@123");
+		Test1.put("product", "ZARA COAT 3");
+		
+		HashMap<String,String> Test2= new HashMap<String, String>();
+		Test2.put("email","GcsSiva@gmail.com");
+		Test2.put("password", "Siva@123");
+		Test2.put("product", "ADIDAS ORIGINAL");
+		*/
+		List<HashMap<String,String>> data =getjsonDataToMap(System.getProperty("user.dir")+"\\src\\main\\java\\framework\\data\\Purchase.json");
+		return new Object[][] {{data.get(0)},{data.get(1)}};
+	
+	}
 }

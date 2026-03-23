@@ -52,16 +52,4 @@ public class PaymentPage extends AbstractClass {
 	}
 
 	
-	
-	
-	/*Actions a = new Actions(driver);
-	a.sendKeys(driver.findElement(By.cssSelector("[placeholder='Select Country']")), "India").build().perform();
-
-	wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.cssSelector(".ta-results")));
-	
-	driver.findElement(By.xpath("(//button[contains(@class,'ta-item')])[2]")).click();
-	wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".ngx-spinner-overlay")));
-	wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".action__submit"))).click();
-	*/
-	
 }
